@@ -1,0 +1,1 @@
+# Sentera-6X-QGIS-Plugin
