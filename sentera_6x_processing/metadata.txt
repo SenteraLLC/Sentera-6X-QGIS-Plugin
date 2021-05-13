@@ -1,0 +1,22 @@
+[general]
+name=Sentera 6X Post Processing
+qgisMinimumVersion=3.0
+description=This plugin processes mosaics created using Sentera 6X imagery.  Outputs include a 5-band moasic, RGB mosaic, or index layers.
+version=0.1
+author=Sentera
+email=gis@sentera.com
+
+about=This plugin processes mosaics created using Sentera 6X imagery. Outputs include a 5-band moasic and index layers. Available Indices: NDVI, NDRE, GNDVI, NDWI, CIRE, CIG, Tacari Osavi, GLI.  See Index_Info.txt for more information.
+
+tracker=https://github.com/SenteraLLC/Sentera-6X-QGIS-Plugin/issues
+repository=https://github.com/SenteraLLC/Sentera-6X-QGIS-Plugin
+
+tags=python, sentera, 6x, multispectral
+
+homepage=https://www.sentera.com
+category=Raster
+icon=icon.png
+experimental=False
+deprecated=False
+server=False
+

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/sentera_6x_processing" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>

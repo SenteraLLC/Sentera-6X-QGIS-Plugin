@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Processing</class>
+ <widget class="QDialog" name="Processing">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>250</width>
+    <height>200</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Generating Outputs</string>
+  </property>
+  <widget class="QProgressBar" name="progressBar">
+   <property name="geometry">
+    <rect>
+     <x>25</x>
+     <y>150</y>
+     <width>200</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="value">
+    <number>50</number>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QPlainTextEdit" name="loadText">
+   <property name="geometry">
+    <rect>
+     <x>25</x>
+     <y>10</y>
+     <width>200</width>
+     <height>131</height>
+    </rect>
+   </property>
+   <property name="textInteractionFlags">
+    <set>Qt::NoTextInteraction</set>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
