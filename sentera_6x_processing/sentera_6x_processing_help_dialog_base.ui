@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Processing</class>
+ <widget class="QDialog" name="Processing">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>489</width>
+    <height>754</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>6X Processing Help Menu</string>
+  </property>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>466</width>
+     <height>141</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Inputs</string>
+   </property>
+   <widget class="QPlainTextEdit" name="plainTextEdit_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>446</width>
+      <height>111</height>
+     </rect>
+    </property>
+    <property name="lineWrapMode">
+     <enum>QPlainTextEdit::NoWrap</enum>
+    </property>
+    <property name="plainText">
+     <string>Narrow Bands: Single channel mosaics produced by a stitching software.  1 band mosaic 
+or 2 band mosaic containing an alpha channel.  Single channel mosaics are combined to 
+produce the 5-band mosaic.
+
+5-band: 5-band mosaic with containg bands ordered as Red, Green, Blue, Red Edge, NIR.
+A 5-band mosaic is used to produce health indices.</string>
+    </property>
+    <property name="textInteractionFlags">
+     <set>Qt::NoTextInteraction</set>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>155</y>
+     <width>466</width>
+     <height>166</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Outputs</string>
+   </property>
+   <widget class="QPlainTextEdit" name="plainTextEdit_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>446</width>
+      <height>136</height>
+     </rect>
+    </property>
+    <property name="lineWrapMode">
+     <enum>QPlainTextEdit::NoWrap</enum>
+    </property>
+    <property name="plainText">
+     <string>5-Band Mosaic: Create a 5-band mosaic from 5 narrow channel mosaics.  Output mosaic
+will contain bands ordered as Red, Green, Blue, Red Edge, NIR.
+
+RGB Mosaic: Create a 3-band mosaic from narrow channel inputs or a 5-band mosaic.
+RGB mosaic will contain Red, Green, Blue bands in byte format.
+
+Index Layers: Create selected health index layers.  Health index layers are a single band
+mosaic in Float32 format.</string>
+    </property>
+    <property name="textInteractionFlags">
+     <set>Qt::NoTextInteraction</set>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_3">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>325</y>
+     <width>466</width>
+     <height>206</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Indices</string>
+   </property>
+   <widget class="QPlainTextEdit" name="plainTextEdit">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>446</width>
+      <height>176</height>
+     </rect>
+    </property>
+    <property name="lineWrapMode">
+     <enum>QPlainTextEdit::NoWrap</enum>
+    </property>
+    <property name="plainText">
+     <string>NDVI -- Normalized Difference Vegetation Index
+	Required bands: Red, NIR
+	Eqaution: (NIR - RED)/(NIR + RED)
+
+NDRE -- Normalized Difference Red Edge
+	Required bands: Red Edge, NIR
+	Eqaution: (NIR - RED_EDGE)/(NIR + RED_EDGE)
+
+GNDVI-- Green Normalized Difference Vegetation Index
+	Required bands: Green, NIR
+	Eqaution: (NIR - GREEN)/(NIR + GREEN)
+
+NDWI -- Normalized Difference Water Index(Without SWIR)
+	Required bands: Green, NIR
+	Eqaution: (GREEN - NIR)/(GREEN + NIR)
+
+CIRE -- Chlorophyll Index Red Edge
+	Required bands: Red Edge, NIR
+	Eqaution: (NIR - RED_EDGE) - 1
+
+CIG -- Chlorophyll Index Green
+	Required bands: Green, NIR
+	Eqaution: (NIR - GREEN) - 1
+
+TCARI/OSAVI --  TCARI/OSAVI
+	Required bands: Red, Green, Red Edge, NIR
+	Eqaution: (3 * ((RED_EDGE – RED)–0.2*(RED_EDGE – GREEN)*(RED_EDGE / RED)) / (1.16 * (NIR – RED)/(NIR + RED + .16)))
+
+GLI -- Green Leaf Index
+	Required bands: Red, Green, Blue
+	Eqaution: (2*GREEN - RED - BLUE)/(2*GREEN + RED + BLUE)</string>
+    </property>
+    <property name="textInteractionFlags">
+     <set>Qt::NoTextInteraction</set>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_4">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>535</y>
+     <width>466</width>
+     <height>111</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Output Information</string>
+   </property>
+   <widget class="QPlainTextEdit" name="plainTextEdit_4">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>446</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="lineWrapMode">
+     <enum>QPlainTextEdit::NoWrap</enum>
+    </property>
+    <property name="plainText">
+     <string>Output Base Name:  This name will be used as the prefix of output files. 
+
+Output Folder:  Output files will be stored in this folder location.  If the provided folder
+does not exist, it will be created.
+</string>
+    </property>
+    <property name="textInteractionFlags">
+     <set>Qt::NoTextInteraction</set>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_5">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>650</y>
+     <width>466</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Additional Questions/Comments</string>
+   </property>
+   <widget class="QPlainTextEdit" name="plainTextEdit_5">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>446</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="lineWrapMode">
+     <enum>QPlainTextEdit::NoWrap</enum>
+    </property>
+    <property name="plainText">
+     <string>Email support@sentera.com with questions or comments about this plugin.
+</string>
+    </property>
+    <property name="textInteractionFlags">
+     <set>Qt::NoTextInteraction</set>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

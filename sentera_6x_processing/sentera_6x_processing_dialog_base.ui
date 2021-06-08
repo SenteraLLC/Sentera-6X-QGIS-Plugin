@@ -7,16 +7,16 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>500</height>
+    <height>499</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Six X Processing</string>
+   <string>Sentera 6X Post Processing</string>
   </property>
   <widget class="QDialogButtonBox" name="button_box">
    <property name="geometry">
     <rect>
-     <x>375</x>
+     <x>325</x>
      <y>465</y>
      <width>211</width>
      <height>32</height>
@@ -562,6 +562,19 @@
      </widget>
     </widget>
    </widget>
+  </widget>
+  <widget class="QPushButton" name="helpButton">
+   <property name="geometry">
+    <rect>
+     <x>545</x>
+     <y>469</y>
+     <width>31</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Help</string>
+   </property>
   </widget>
  </widget>
  <resources/>

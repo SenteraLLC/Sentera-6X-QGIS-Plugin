@@ -36,6 +36,7 @@ from gdal_calc import Calc
 from .resources import *
 from .sentera_6x_processing_dialog import Sentera6XProcessingDialog
 from .sentera_6x_processing_loading_dialog import Sentera6XProcessingDialogLoading
+from .sentera_6x_processing_help_dialog import Sentera6XProcessingDialogHelp
 
 
 class Sentera6XProcessing:
@@ -114,8 +115,11 @@ class Sentera6XProcessing:
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
-
-        icon_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "icon.png")
+        qs = QgsSettings()
+        if qs.value('UI/UITheme') == 'Night Mapping':
+            icon_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "icon_night.png")
+        else:
+            icon_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "icon_default.png")
         self.add_action(
             icon_path,
             text=self.tr(u'Process 6X Imagery'),
@@ -227,6 +231,9 @@ class Sentera6XProcessing:
             self.dlg.fiveBandBox.setEnabled(True)
         else:
             self.dlg.fiveBandBox.setEnabled(False)
+
+    def open_help_menu(self):
+        self.help_dlg.show()
 
     def convert_raster_to_float(self, mosaic_path):
         # convert non-float raster to float.
@@ -417,11 +424,13 @@ class Sentera6XProcessing:
             self.first_start = False
             self.dlg = Sentera6XProcessingDialog()
             self.load_dlg = Sentera6XProcessingDialogLoading()
+            self.help_dlg = Sentera6XProcessingDialogHelp()
             self.dlg.outputButton.clicked.connect(self.select_output_folder)
             self.dlg.selectAllButton.clicked.connect(self.toggle_all_indices)
             self.dlg.selectNDButton.clicked.connect(self.toggle_ndvi_indice)
             self.dlg.generateIndicesButton.clicked.connect(self.toggle_index_selection)
             self.dlg.inputTab.currentChanged.connect(self.toggle_input_type)
+            self.dlg.helpButton.clicked.connect(self.open_help_menu)
 
 
         self.refresh_raster_narrow_bands(1)
@@ -437,6 +446,7 @@ class Sentera6XProcessing:
         if result:
             self.load_dlg.show()
             self.load_dlg.loadText.insertPlainText('Generating Outputs\n')
+            self.help_dlg.close()
             # get processing start time
             start_time = datetime.now()
             print('6x processing start::{}'.format(start_time))
