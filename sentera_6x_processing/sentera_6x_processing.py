@@ -30,7 +30,6 @@ from qgis.gui import *
 from qgis import processing
 import os
 from datetime import datetime
-import gdal
 from .resources import *
 from .sentera_6x_processing_dialog import Sentera6XProcessingDialog
 from .sentera_6x_processing_loading_dialog import Sentera6XProcessingDialogLoading
@@ -272,7 +271,21 @@ class Sentera6XProcessing:
         input_path = raster_layer.dataProvider().dataSourceUri()
 
         # extract reflectance values from band 1
+        '''
         Calc("A*(A>0) + -10000*(A<=0)", A=input_path, A_band=band_number, outfile=temp_out_path, NoDataValue=-10000)
+        '''
+        one_band_params = {
+            'BAND_A': band_number,
+            'EXTRA': '',
+            'FORMULA': "A*(A>0) + -10000*(A<=0)",
+            'INPUT_A': input_path,
+            'NO_DATA': -10000,
+            'OPTIONS': '',
+            'RTYPE': 5,
+            'OUTPUT': temp_out_path
+        }
+        processing.run('gdal:rastercalculator', one_band_params)
+
         band_one_raster = QgsRasterLayer(temp_out_path, raster_layer.name())
 
         return band_one_raster
@@ -292,7 +305,6 @@ class Sentera6XProcessing:
                  ])
         '''
 
-        outputs = {}
         alg_params = {
             'DATA_TYPE': 5,
             'EXTRA': '',
@@ -308,7 +320,7 @@ class Sentera6XProcessing:
             'SEPARATE': True,
             'OUTPUT': output_path
         }
-        outputs['Merge'] = processing.run('gdal:merge', alg_params)
+        processing.run('gdal:merge', alg_params)
 
         five_band_layer = QgsRasterLayer(output_path, str(output_base + '_6X_5_band_mosaic'))
         # set 5-band layer styling to correctly display mosaic and correctly extract RGB
@@ -382,10 +394,12 @@ class Sentera6XProcessing:
             '''
 
             ndre_params = {
+                'BAND_A': red_edge_band,
                 'BAND_D': red_edge_band,
                 'BAND_E': nir_band,
                 'EXTRA': '',
                 'FORMULA': "(E - D)/(E + D)",
+                'INPUT_A': red_edge,
                 'INPUT_D': red_edge,
                 'INPUT_E': nir,
                 'NO_DATA': -10000,
@@ -409,10 +423,12 @@ class Sentera6XProcessing:
             '''
 
             gndvi_params = {
+                'BAND_A': green_band,
                 'BAND_B': green_band,
                 'BAND_E': nir_band,
                 'EXTRA': '',
                 'FORMULA': "(E - B)/(E + B)",
+                'INPUT_A': green,
                 'INPUT_B': green,
                 'INPUT_E': nir,
                 'NO_DATA': -10000,
@@ -436,10 +452,12 @@ class Sentera6XProcessing:
             '''
 
             ndwi_params = {
+                'BAND_A': green_band,
                 'BAND_B': green_band,
                 'BAND_E': nir_band,
                 'EXTRA': '',
                 'FORMULA': "(B - E)/(B + E)",
+                'INPUT_A': green,
                 'INPUT_B': green,
                 'INPUT_E': nir,
                 'NO_DATA': -10000,
@@ -463,10 +481,12 @@ class Sentera6XProcessing:
             '''
 
             cire_params = {
+                'BAND_A': red_edge_band,
                 'BAND_D': red_edge_band,
                 'BAND_E': nir_band,
                 'EXTRA': '',
                 'FORMULA': "(E - D) - 1",
+                'INPUT_A': red_edge,
                 'INPUT_D': red_edge,
                 'INPUT_E': nir,
                 'NO_DATA': -10000,
@@ -490,10 +510,12 @@ class Sentera6XProcessing:
             '''
 
             cig_params = {
+                'BAND_A': green_band,
                 'BAND_B': green_band,
                 'BAND_E': nir_band,
                 'EXTRA': '',
                 'FORMULA': "(E - B) - 1",
+                'INPUT_A': green,
                 'INPUT_B': green,
                 'INPUT_E': nir,
                 'NO_DATA': -10000,
