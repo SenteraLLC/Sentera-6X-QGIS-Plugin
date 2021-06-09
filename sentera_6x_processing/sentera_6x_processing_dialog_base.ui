@@ -266,7 +266,7 @@
      <x>25</x>
      <y>225</y>
      <width>550</width>
-     <height>40</height>
+     <height>51</height>
     </rect>
    </property>
    <property name="palette">
@@ -353,7 +353,7 @@
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>15</y>
+      <y>25</y>
       <width>106</width>
       <height>17</height>
      </rect>
@@ -366,7 +366,7 @@
     <property name="geometry">
      <rect>
       <x>260</x>
-      <y>15</y>
+      <y>25</y>
       <width>96</width>
       <height>17</height>
      </rect>
@@ -379,7 +379,7 @@
     <property name="geometry">
      <rect>
       <x>400</x>
-      <y>15</y>
+      <y>25</y>
       <width>106</width>
       <height>17</height>
      </rect>

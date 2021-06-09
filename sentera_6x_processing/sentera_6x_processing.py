@@ -29,10 +29,8 @@ from qgis.utils import *
 from qgis.gui import *
 from qgis import processing
 import os
-import gdal_merge as gm
 from datetime import datetime
 import gdal
-from gdal_calc import Calc
 from .resources import *
 from .sentera_6x_processing_dialog import Sentera6XProcessingDialog
 from .sentera_6x_processing_loading_dialog import Sentera6XProcessingDialogLoading
@@ -283,6 +281,7 @@ class Sentera6XProcessing:
         # Create five band mosaic
         output_path = os.path.join(output_directory, str(output_base + '_6X_5_band_mosaic.tif'))
 
+        '''
         # Run gdal_merge using separate tag and set nodata as -10000
         gm.main(['', '-separate', '-n', '-10000', '-a_nodata', '-10000', '-o', output_path,
                  data_dictionary['RED_band'].dataProvider().dataSourceUri(),
@@ -291,6 +290,25 @@ class Sentera6XProcessing:
                  data_dictionary['RED_EDGE_band'].dataProvider().dataSourceUri(),
                  data_dictionary['NIR_band'].dataProvider().dataSourceUri()
                  ])
+        '''
+
+        outputs = {}
+        alg_params = {
+            'DATA_TYPE': 5,
+            'EXTRA': '',
+            'INPUT': [data_dictionary['RED_band'].dataProvider().dataSourceUri(),
+                        data_dictionary['GREEN_band'].dataProvider().dataSourceUri(),
+                        data_dictionary['BLUE_band'].dataProvider().dataSourceUri(),
+                        data_dictionary['RED_EDGE_band'].dataProvider().dataSourceUri(),
+                        data_dictionary['NIR_band'].dataProvider().dataSourceUri()],
+            'NODATA_INPUT': None,
+            'NODATA_OUTPUT': None,
+            'OPTIONS': '',
+            'PCT': False,
+            'SEPARATE': True,
+            'OUTPUT': output_path
+        }
+        outputs['Merge'] = processing.run('gdal:merge', alg_params)
 
         five_band_layer = QgsRasterLayer(output_path, str(output_base + '_6X_5_band_mosaic'))
         # set 5-band layer styling to correctly display mosaic and correctly extract RGB
@@ -332,8 +350,24 @@ class Sentera6XProcessing:
             # NDVI EQUATION: (NIR - RED)/(NIR + RED)
             ndvi_output_path = os.path.join(output_dir, str(output_base + '_ndvi_index.tif'))
 
+            '''
             Calc("(E - A)/(E + A)", A=red, E=nir, A_band=red_band, E_band=nir_band, outfile=ndvi_output_path,
                  NoDataValue=-10000)
+            '''
+            ndvi_params = {
+                'BAND_A': red_band,
+                'BAND_E': nir_band,
+                'EXTRA': '',
+                'FORMULA': "(E - A)/(E + A)",
+                'INPUT_A': red,
+                'INPUT_E': nir,
+                'NO_DATA': -10000,
+                'OPTIONS': '',
+                'RTYPE': 5,
+                'OUTPUT': ndvi_output_path
+            }
+            processing.run('gdal:rastercalculator', ndvi_params)
+
             if self.dlg.loadBox.isChecked():
                 ndvi_layer = QgsRasterLayer(ndvi_output_path, str(output_base + '_ndvi_index'))
                 QgsProject.instance().addMapLayer(ndvi_layer)
@@ -342,8 +376,25 @@ class Sentera6XProcessing:
             # NDRE EQUATION: (NIR - RED_EDGE)/(NIR + RED_EDGE)
             ndre_output_path = os.path.join(output_dir, str(output_base + '_ndre_index.tif'))
 
+            '''
             Calc("(E - D)/(E + D)", D=red_edge, E=nir, D_band=red_edge_band, E_band=nir_band, outfile=ndre_output_path,
                  NoDataValue=-10000)
+            '''
+
+            ndre_params = {
+                'BAND_D': red_edge_band,
+                'BAND_E': nir_band,
+                'EXTRA': '',
+                'FORMULA': "(E - D)/(E + D)",
+                'INPUT_D': red_edge,
+                'INPUT_E': nir,
+                'NO_DATA': -10000,
+                'OPTIONS': '',
+                'RTYPE': 5,
+                'OUTPUT': ndre_output_path
+            }
+            processing.run('gdal:rastercalculator', ndre_params)
+
             if self.dlg.loadBox.isChecked():
                 ndre_layer = QgsRasterLayer(ndre_output_path, str(output_base + '_ndre_index'))
                 QgsProject.instance().addMapLayer(ndre_layer)
@@ -352,8 +403,25 @@ class Sentera6XProcessing:
             # GNDVI EQUATION: (NIR - GREEN)/(NIR + GREEN)
             gndvi_output_path = os.path.join(output_dir, str(output_base + '_gndvi_index.tif'))
 
+            '''
             Calc("(E - B)/(E + B)", B=green, E=nir, B_band=green_band, E_band=nir_band, outfile=gndvi_output_path,
                  NoDataValue=-10000)
+            '''
+
+            gndvi_params = {
+                'BAND_B': green_band,
+                'BAND_E': nir_band,
+                'EXTRA': '',
+                'FORMULA': "(E - B)/(E + B)",
+                'INPUT_B': green,
+                'INPUT_E': nir,
+                'NO_DATA': -10000,
+                'OPTIONS': '',
+                'RTYPE': 5,
+                'OUTPUT': gndvi_output_path
+            }
+            processing.run('gdal:rastercalculator', gndvi_params)
+
             if self.dlg.loadBox.isChecked():
                 gndvi_layer = QgsRasterLayer(gndvi_output_path, str(output_base + '_gndvi_index'))
                 QgsProject.instance().addMapLayer(gndvi_layer)
@@ -362,8 +430,25 @@ class Sentera6XProcessing:
             # NDWI EQUATION: (GREEN - NIR)/(GREEN + NIR)
             ndwi_output_path = os.path.join(output_dir, str(output_base + '_ndwi_index.tif'))
 
+            '''
             Calc("(B - E)/(B + E)", B=green, E=nir, B_band=green_band, E_band=nir_band, outfile=ndwi_output_path,
                  NoDataValue=-10000)
+            '''
+
+            ndwi_params = {
+                'BAND_B': green_band,
+                'BAND_E': nir_band,
+                'EXTRA': '',
+                'FORMULA': "(B - E)/(B + E)",
+                'INPUT_B': green,
+                'INPUT_E': nir,
+                'NO_DATA': -10000,
+                'OPTIONS': '',
+                'RTYPE': 5,
+                'OUTPUT': ndwi_output_path
+            }
+            processing.run('gdal:rastercalculator', ndwi_params)
+
             if self.dlg.loadBox.isChecked():
                 ndwi_layer = QgsRasterLayer(ndwi_output_path, str(output_base + '_ndwi_index'))
                 QgsProject.instance().addMapLayer(ndwi_layer)
@@ -372,8 +457,25 @@ class Sentera6XProcessing:
             # CIRE EQUATION: (NIR - RED_EDGE) - 1
             cire_output_path = os.path.join(output_dir, str(output_base + '_cire_index.tif'))
 
+            '''
             Calc("(E - D) - 1", D=red_edge, E=nir, D_band=red_edge_band, E_band=nir_band, outfile=cire_output_path,
                  NoDataValue=-10000)
+            '''
+
+            cire_params = {
+                'BAND_D': red_edge_band,
+                'BAND_E': nir_band,
+                'EXTRA': '',
+                'FORMULA': "(E - D) - 1",
+                'INPUT_D': red_edge,
+                'INPUT_E': nir,
+                'NO_DATA': -10000,
+                'OPTIONS': '',
+                'RTYPE': 5,
+                'OUTPUT': cire_output_path
+            }
+            processing.run('gdal:rastercalculator', cire_params)
+
             if self.dlg.loadBox.isChecked():
                 cire_layer = QgsRasterLayer(cire_output_path, str(output_base + '_cire_index'))
                 QgsProject.instance().addMapLayer(cire_layer)
@@ -382,8 +484,25 @@ class Sentera6XProcessing:
             # CIG EQUATION: (NIR - GREEN) - 1
             cig_output_path = os.path.join(output_dir, str(output_base + '_cig_index.tif'))
 
+            '''
             Calc("(E - B) - 1", B=green, E=nir, B_band=green_band, E_band=nir_band, outfile=cig_output_path,
                  NoDataValue=-10000)
+            '''
+
+            cig_params = {
+                'BAND_B': green_band,
+                'BAND_E': nir_band,
+                'EXTRA': '',
+                'FORMULA': "(E - B) - 1",
+                'INPUT_B': green,
+                'INPUT_E': nir,
+                'NO_DATA': -10000,
+                'OPTIONS': '',
+                'RTYPE': 5,
+                'OUTPUT': cig_output_path
+            }
+            processing.run('gdal:rastercalculator', cig_params)
+
             if self.dlg.loadBox.isChecked():
                 cig_layer = QgsRasterLayer(cig_output_path, str(output_base + '_cig_index'))
                 QgsProject.instance().addMapLayer(cig_layer)
@@ -392,10 +511,31 @@ class Sentera6XProcessing:
             #  T-O Equation: (3 * ((RED_EDGE – RED)–0.2*(RED_EDGE – GREEN)*(RED_EDGE / RED)) / (1.16 * (NIR – RED)/(NIR + RED + .16)))
             tcari_output_path = os.path.join(output_dir, str(output_base + '_tcari_osavi_index.tif'))
 
+            '''
             Calc("(3*((D-A)-0.2*(D-B)*(D/A))/(1.16*(E-A)/(E+A+0.16)))",
                  A=red, B=green, D=red_edge, E=nir,
                  A_band=red_band, B_band=green_band, D_band=red_edge_band, E_band=nir_band,
                  outfile=tcari_output_path, NoDataValue=-10000)
+            '''
+
+            t_o_params = {
+                'BAND_A': red_band,
+                'BAND_B': green_band,
+                'BAND_D': red_edge_band,
+                'BAND_E': nir_band,
+                'EXTRA': '',
+                'FORMULA': "(3*((D-A)-0.2*(D-B)*(D/A))/(1.16*(E-A)/(E+A+0.16)))",
+                'INPUT_A': red,
+                'INPUT_B': green,
+                'INPUT_D': red_edge,
+                'INPUT_E': nir,
+                'NO_DATA': -10000,
+                'OPTIONS': '',
+                'RTYPE': 5,
+                'OUTPUT': tcari_output_path
+            }
+            processing.run('gdal:rastercalculator', t_o_params)
+
             if self.dlg.loadBox.isChecked():
                 tcari_layer = QgsRasterLayer(tcari_output_path, str(output_base + '_tcari_osavi_index'))
                 QgsProject.instance().addMapLayer(tcari_layer)
@@ -404,9 +544,28 @@ class Sentera6XProcessing:
             # GLI EQUATION: (2*GREEN - RED - BLUE)/(2*GREEN + RED + BLUE)
             gli_output_path = os.path.join(output_dir, str(output_base + '_gli_index.tif'))
 
+            '''
             Calc("((2*B)-A-C)/((2*B)+A+C)", A=red, B=green, C=blue, A_band=red_band, B_band=green_band,
                  C_band=blue_band,
                  outfile=gli_output_path, NoDataValue=-10000)
+            '''
+
+            gli_params = {
+                'BAND_A': red_band,
+                'BAND_B': green_band,
+                'BAND_C': blue_band,
+                'EXTRA': '',
+                'FORMULA': "(3*((D-A)-0.2*(D-B)*(D/A))/(1.16*(E-A)/(E+A+0.16)))",
+                'INPUT_A': red,
+                'INPUT_B': green,
+                'INPUT_C': blue,
+                'NO_DATA': -10000,
+                'OPTIONS': '',
+                'RTYPE': 5,
+                'OUTPUT': gli_output_path
+            }
+            processing.run('gdal:rastercalculator', gli_params)
+
             if self.dlg.loadBox.isChecked():
                 gli_layer = QgsRasterLayer(gli_output_path, str(output_base + '_gli_index'))
                 QgsProject.instance().addMapLayer(gli_layer)
@@ -609,7 +768,7 @@ class Sentera6XProcessing:
             six_x_data_dict = None
 
             self.load_dlg.loadText.insertPlainText('Processing Complete\nOutputs saved to: {}'.format(output_dir))
-            self.load_dlg.progressBar.setValue(100)
+            self.load_dlg.progressBar.setValue(1)
 
             file_list = [f for f in os.listdir(output_dir) if os.path.isfile(os.path.join(output_dir, f))]
             for f in file_list:
