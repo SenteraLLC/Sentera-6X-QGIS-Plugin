@@ -577,7 +577,7 @@ class Sentera6XProcessing:
                 'BAND_B': green_band,
                 'BAND_C': blue_band,
                 'EXTRA': '',
-                'FORMULA': "(3*((D-A)-0.2*(D-B)*(D/A))/(1.16*(E-A)/(E+A+0.16)))",
+                'FORMULA': "((2*B)-A-C)/((2*B)+A+C)",
                 'INPUT_A': red,
                 'INPUT_B': green,
                 'INPUT_C': blue,
@@ -790,7 +790,7 @@ class Sentera6XProcessing:
             six_x_data_dict = None
 
             self.load_dlg.loadText.insertPlainText('Processing Complete\nOutputs saved to: {}'.format(output_dir))
-            self.load_dlg.progressBar.setValue(1)
+            
 
             file_list = [f for f in os.listdir(output_dir) if os.path.isfile(os.path.join(output_dir, f))]
             for f in file_list:
