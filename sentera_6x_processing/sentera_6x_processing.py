@@ -232,12 +232,26 @@ class Sentera6XProcessing:
     def open_help_menu(self):
         self.help_dlg.show()
 
-    def convert_raster_to_float(self, mosaic_path):
+    def convert_raster_to_float(self, mosaic):
         # convert non-float raster to float.
         print('converting raster')
+        mosaic_path = mosaic.dataProvider().dataSourceUri()
         output_path = os.path.normpath(mosaic_path[:-4] + '_f32_temp.tif')
+        """
         translate_options = gdal.TranslateOptions(outputType=gdal.GDT_Float32, noData=-10000)
         gdal.Translate(output_path, mosaic_path, options=translate_options)
+        """
+        translate_params = {
+            'COPY_SUBDATASETS': False,
+            'DATA_TYPE': 6,
+            'EXTRA': '',
+            'INPUT': mosaic,
+            'NODATA': -10000,
+            'OPTIONS': '',
+            'TARGET_CRS': None,
+            'OUTPUT': output_path
+        }
+        processing.run('gdal:translate', translate_params)
         return output_path
 
     def match_extents(self, input_raster, reference_raster, output_dir, band_name):
@@ -681,12 +695,16 @@ class Sentera6XProcessing:
                 six_x_data_dict['5_BAND_LAYER'] = raster_layers[five_band_layer_index]
 
                 # check 5-band mosaic data type, if type is not float32, convert to float
+
+                """
                 five_band_type_test = gdal.Open(six_x_data_dict['5_BAND_LAYER'].dataProvider().dataSourceUri())
                 band_1 = five_band_type_test.GetRasterBand(1)
                 print(gdal.GetDataTypeName(band_1.DataType))
-                if gdal.GetDataTypeName(band_1.DataType) != 'Float32':
+                """
+
+                if six_x_data_dict['5_BAND_LAYER'].dataProvider().dataType(1) != 6:
                     six_x_data_dict['5_BAND_LAYER'] = QgsRasterLayer(self.convert_raster_to_float(
-                        six_x_data_dict['5_BAND_LAYER'].dataProvider().dataSourceUri()), 'five_band_float')
+                        six_x_data_dict['5_BAND_LAYER']), 'five_band_float')
 
                 # set 5-band layer style
                 five_band_layer = six_x_data_dict['5_BAND_LAYER']
@@ -790,7 +808,7 @@ class Sentera6XProcessing:
             six_x_data_dict = None
 
             self.load_dlg.loadText.insertPlainText('Processing Complete\nOutputs saved to: {}'.format(output_dir))
-            
+
 
             file_list = [f for f in os.listdir(output_dir) if os.path.isfile(os.path.join(output_dir, f))]
             for f in file_list:
