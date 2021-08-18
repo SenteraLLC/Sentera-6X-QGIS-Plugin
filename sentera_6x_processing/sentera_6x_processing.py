@@ -691,7 +691,7 @@ class Sentera6XProcessing:
             elif self.dlg.inputTab.currentIndex() == 1:
                 # if 5-band mosaic provided, create band name list
                 raster_layers = self.refresh_raster_five_band(0)
-                five_band_layer_index = self.dlg.red_band_box.currentIndex()
+                five_band_layer_index = self.dlg.five_band_input_box.currentIndex()
                 six_x_data_dict['5_BAND_LAYER'] = raster_layers[five_band_layer_index]
 
                 # check 5-band mosaic data type, if type is not float32, convert to float
