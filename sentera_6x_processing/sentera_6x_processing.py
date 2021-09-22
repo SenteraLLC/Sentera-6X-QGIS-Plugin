@@ -762,9 +762,11 @@ class Sentera6XProcessing:
                         pass
                     else:
                         required_band_set = set(required_band_list)
+                        required_band_set_list = []
                         for ban in required_band_set:
                             width_list.append(six_x_data_dict[str(ban + '_band')].width())
                             height_list.append(six_x_data_dict[str(ban + '_band')].height())
+                            required_band_set_list.append(ban)
 
                         width_set = set(width_list)
                         height_set = set(height_list)
@@ -774,7 +776,7 @@ class Sentera6XProcessing:
                             for ba in required_band_set:
                                 six_x_data_dict[str(ba + '_band')] = self.match_extents(
                                     six_x_data_dict[str(ba + '_band')],
-                                    six_x_data_dict[str(required_band_set[0] + '_band')],
+                                    six_x_data_dict[str(required_band_set_list[0] + '_band')],
                                     output_dir, ba)
 
                     # generate selected indices
