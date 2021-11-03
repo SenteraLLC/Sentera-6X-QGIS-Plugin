@@ -304,9 +304,9 @@ class Sentera6XProcessing:
 
         return band_one_raster
 
-    def create_five_band(self, data_dictionary, output_directory, output_base):
+    def create_five_band(self, data_dictionary, output_directory, output_base, multispectral=True):
         # Create five band mosaic
-        output_path = os.path.join(output_directory, str(output_base + '_6X_5_band_mosaic.tif'))
+
 
         '''
         # Run gdal_merge using separate tag and set nodata as -10000
@@ -319,30 +319,88 @@ class Sentera6XProcessing:
                  ])
         '''
 
-        alg_params = {
-            'DATA_TYPE': 5,
-            'EXTRA': '',
-            'INPUT': [data_dictionary['RED_band'].dataProvider().dataSourceUri(),
-                        data_dictionary['GREEN_band'].dataProvider().dataSourceUri(),
-                        data_dictionary['BLUE_band'].dataProvider().dataSourceUri(),
-                        data_dictionary['RED_EDGE_band'].dataProvider().dataSourceUri(),
-                        data_dictionary['NIR_band'].dataProvider().dataSourceUri()],
-            'NODATA_INPUT': None,
-            'NODATA_OUTPUT': -10000,
-            'OPTIONS': '',
-            'PCT': False,
-            'SEPARATE': True,
-            'OUTPUT': output_path
-        }
-        processing.run('gdal:merge', alg_params)
+        if multispectral:
+            output_path = os.path.join(output_directory, str(output_base + '_6X_5_band_mosaic.tif'))
 
-        five_band_layer = QgsRasterLayer(output_path, str(output_base + '_6X_5_band_mosaic'))
-        # set 5-band layer styling to correctly display mosaic and correctly extract RGB
-        five_band_layer.setContrastEnhancement(QgsContrastEnhancement.StretchToMinimumMaximum, QgsRasterMinMaxOrigin.MinMax)
-        if self.dlg.loadBox.isChecked():
-            QgsProject.instance().addMapLayer(five_band_layer)
 
-        return five_band_layer
+            alg_params = {
+                'DATA_TYPE': 5,
+                'EXTRA': '',
+                'INPUT': [data_dictionary['RED_band'].dataProvider().dataSourceUri(),
+                            data_dictionary['GREEN_band'].dataProvider().dataSourceUri(),
+                            data_dictionary['BLUE_band'].dataProvider().dataSourceUri(),
+                            data_dictionary['RED_EDGE_band'].dataProvider().dataSourceUri(),
+                            data_dictionary['NIR_band'].dataProvider().dataSourceUri()],
+                'NODATA_INPUT': None,
+                'NODATA_OUTPUT': None,
+                'OPTIONS': '',
+                'PCT': False,
+                'SEPARATE': True,
+                'OUTPUT': output_path
+            }
+            processing.run('gdal:merge', alg_params)
+
+            five_band_layer = QgsRasterLayer(output_path, str(output_base + '_6X_5_band_mosaic'))
+            # set 5-band layer styling to correctly display mosaic and correctly extract RGB
+            five_band_layer.setContrastEnhancement(QgsContrastEnhancement.StretchToMinimumMaximum, QgsRasterMinMaxOrigin.MinMax)
+            if self.dlg.loadBox.isChecked():
+                QgsProject.instance().addMapLayer(five_band_layer)
+
+            return five_band_layer
+
+        else:
+            output_path = os.path.join(output_directory, str(output_base + '_6X_RGB_mosaic.tif'))
+            output_path_f32 = os.path.join(output_directory, str(output_base + '_6X_RGB_mosaic_f32.tif'))
+            temp_alpha_path = os.path.join(output_directory, str(output_base + '_6X_RGB_alpha.tif'))
+
+            alpha_params = {
+                'INPUT_A': data_dictionary['RED_band'].dataProvider().dataSourceUri(),
+                'EXTRA': '',
+                'FORMULA': "(A>0)*255 + (A<=0)*0",
+                'BAND_A': 1,
+                'NO_DATA': '',
+                'OPTIONS': '',
+                'RTYPE': 0,
+                'OUTPUT': temp_alpha_path
+            }
+            processing.run('gdal:rastercalculator', alpha_params)
+            print('alpha band complete?, path: {}'.format(temp_alpha_path))
+
+
+            alg_params = {
+                'DATA_TYPE': 5,
+                'EXTRA': '',
+                'INPUT': [data_dictionary['RED_band'].dataProvider().dataSourceUri(),
+                            data_dictionary['GREEN_band'].dataProvider().dataSourceUri(),
+                            data_dictionary['BLUE_band'].dataProvider().dataSourceUri(),
+                          temp_alpha_path],
+                'NODATA_INPUT': None,
+                'NODATA_OUTPUT': None,
+                'OPTIONS': "",
+                'PCT': False,
+                'SEPARATE': True,
+                'OUTPUT': output_path_f32
+            }
+            processing.run('gdal:merge', alg_params)
+
+            translate_byte_params = {
+                'COPY_SUBDATASETS': False,
+                'DATA_TYPE': 1,
+                'EXTRA': '-scale -colorinterp red,green,blue,alpha',
+                'INPUT': output_path_f32,
+                'NODATA': None,
+                'OPTIONS': '',
+                'TARGET_CRS': None,
+                'OUTPUT': output_path
+            }
+            processing.run('gdal:translate', translate_byte_params)
+            try:
+                os.remove(temp_alpha_path)
+                os.remove(output_path_f32)
+            except:
+                print('failed to delete temp layers')
+
+            return output_path
 
     def generate_indices(self, data_dictionary, indice_list, output_dir, output_base):
 
@@ -763,10 +821,12 @@ class Sentera6XProcessing:
                     else:
                         required_band_set = set(required_band_list)
                         required_band_set_list = []
+                        for bandset in required_band_set:
+                            required_band_set_list.append(bandset)
+
                         for ban in required_band_set:
                             width_list.append(six_x_data_dict[str(ban + '_band')].width())
                             height_list.append(six_x_data_dict[str(ban + '_band')].height())
-                            required_band_set_list.append(ban)
 
                         width_set = set(width_list)
                         height_set = set(height_list)
@@ -786,22 +846,25 @@ class Sentera6XProcessing:
 
             if self.dlg.rgbBox.isChecked():
                 print('generating rgb layer')
-                # get info from 5-band mosaic and export rendering as 3 band byte mosaic
-                five_band_mosaic = six_x_data_dict['5_BAND_LAYER']
-                extent = five_band_mosaic.extent()
-                width, height = five_band_mosaic.width(), five_band_mosaic.height()
-                renderer = five_band_mosaic.renderer()
-                provider = five_band_mosaic.dataProvider()
-                pipe = QgsRasterPipe()
-                pipe.set(provider.clone())
-                pipe.set(renderer.clone())
-                rgb_path = os.path.join(output_dir, output_base) + '_6X_RGB_mosaic.tif'
-                file_writer = QgsRasterFileWriter(rgb_path)
-                file_writer.writeRaster(pipe,
-                                        width,
-                                        height,
-                                        extent,
-                                        five_band_mosaic.crs())
+                if '5_BAND_LAYER' in six_x_data_dict:
+                    # get info from 5-band mosaic and export rendering as 3 band byte mosaic
+                    five_band_mosaic = six_x_data_dict['5_BAND_LAYER']
+                    extent = five_band_mosaic.extent()
+                    width, height = five_band_mosaic.width(), five_band_mosaic.height()
+                    renderer = five_band_mosaic.renderer()
+                    provider = five_band_mosaic.dataProvider()
+                    pipe = QgsRasterPipe()
+                    pipe.set(provider.clone())
+                    pipe.set(renderer.clone())
+                    rgb_path = os.path.join(output_dir, output_base) + '_6X_RGB_mosaic.tif'
+                    file_writer = QgsRasterFileWriter(rgb_path)
+                    file_writer.writeRaster(pipe,
+                                            width,
+                                            height,
+                                            extent,
+                                            five_band_mosaic.crs())
+                else:
+                    rgb_path = self.create_five_band(six_x_data_dict, output_dir, output_base, multispectral=False)
                 if self.dlg.loadBox.isChecked():
                     rgb_layer = QgsRasterLayer(rgb_path, os.path.split(rgb_path)[1][:-4])
                     QgsProject.instance().addMapLayer(rgb_layer)
