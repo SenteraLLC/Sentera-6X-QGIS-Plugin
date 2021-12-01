@@ -16,17 +16,17 @@ NDWI -- Normalized Difference Water Index(Without SWIR)
 	Required bands: Green, NIR
 	Eqaution: (GREEN - NIR)/(GREEN + NIR)
 
-CIRE -- Chlorophyll Index Red Edge
+ClRE -- Chlorophyll Index Red Edge
 	Required bands: Red Edge, NIR
-	Eqaution: (NIR - RED_EDGE) - 1
+	Eqaution: (NIR/RED_EDGE) - 1
 
-CIG -- Chlorophyll Index Green
+ClG -- Chlorophyll Index Green
 	Required bands: Green, NIR
-	Eqaution: (NIR - GREEN) - 1
+	Eqaution: (NIR/GREEN) - 1
 
 TCARI/OSAVI --  TCARI/OSAVI
 		Required bands: Red, Green, Red Edge, NIR
-		Eqaution: (3 * ((RED_EDGE – RED)–0.2*(RED_EDGE – GREEN)*(RED_EDGE / RED)) / (1.16 * (NIR – RED)/(NIR + RED + .16)))
+		Eqaution: ((3*(RED_EDGE – RED) – 0.2*(RED_EDGE – GREEN)*(RED_EDGE / RED)) / (1.16 * (NIR – RED)/(NIR + RED + .16)))
 
 GLI -- Green Leaf Index
 	Required bands: Red, Green, Blue

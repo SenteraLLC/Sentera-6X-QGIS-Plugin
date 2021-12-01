@@ -2,7 +2,7 @@
 name=Sentera 6X Post Processing
 qgisMinimumVersion=3.0
 description=This plugin processes mosaics created using Sentera 6X imagery.  Outputs include a 5-band moasic, RGB mosaic, or index layers.
-version=1.5
+version=1.5.1
 author=Sentera
 email=gis@sentera.com
 

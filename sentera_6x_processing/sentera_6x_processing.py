@@ -544,11 +544,11 @@ class Sentera6XProcessing:
                 QgsProject.instance().addMapLayer(ndwi_layer)
 
         if 'CIRE' in indice_list:
-            # CIRE EQUATION: (NIR - RED_EDGE) - 1
+            # CIRE EQUATION: (NIR/RED_EDGE) - 1
             cire_output_path = os.path.join(output_dir, str(output_base + '_cire_index.tif'))
 
             '''
-            Calc("(E - D) - 1", D=red_edge, E=nir, D_band=red_edge_band, E_band=nir_band, outfile=cire_output_path,
+            Calc("(E/D) - 1", D=red_edge, E=nir, D_band=red_edge_band, E_band=nir_band, outfile=cire_output_path,
                  NoDataValue=-10000)
             '''
 
@@ -557,7 +557,7 @@ class Sentera6XProcessing:
                 'BAND_D': red_edge_band,
                 'BAND_E': nir_band,
                 'EXTRA': '',
-                'FORMULA': "(E - D) - 1",
+                'FORMULA': "(E/D) - 1",
                 'INPUT_A': red_edge,
                 'INPUT_D': red_edge,
                 'INPUT_E': nir,
@@ -573,11 +573,11 @@ class Sentera6XProcessing:
                 QgsProject.instance().addMapLayer(cire_layer)
 
         if 'CIG' in indice_list:
-            # CIG EQUATION: (NIR - GREEN) - 1
+            # CIG EQUATION: (NIR/GREEN) - 1
             cig_output_path = os.path.join(output_dir, str(output_base + '_cig_index.tif'))
 
             '''
-            Calc("(E - B) - 1", B=green, E=nir, B_band=green_band, E_band=nir_band, outfile=cig_output_path,
+            Calc("(E/B) - 1", B=green, E=nir, B_band=green_band, E_band=nir_band, outfile=cig_output_path,
                  NoDataValue=-10000)
             '''
 
@@ -586,7 +586,7 @@ class Sentera6XProcessing:
                 'BAND_B': green_band,
                 'BAND_E': nir_band,
                 'EXTRA': '',
-                'FORMULA': "(E - B) - 1",
+                'FORMULA': "(E/B) - 1",
                 'INPUT_A': green,
                 'INPUT_B': green,
                 'INPUT_E': nir,
