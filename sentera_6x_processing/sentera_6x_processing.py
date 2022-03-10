@@ -332,7 +332,7 @@ class Sentera6XProcessing:
                             data_dictionary['RED_EDGE_band'].dataProvider().dataSourceUri(),
                             data_dictionary['NIR_band'].dataProvider().dataSourceUri()],
                 'NODATA_INPUT': None,
-                'NODATA_OUTPUT': None,
+                'NODATA_OUTPUT': -10000,
                 'OPTIONS': '',
                 'PCT': False,
                 'SEPARATE': True,
